@@ -1,56 +1,64 @@
 <script setup>
-import contacts from "./contacts.json";
-import { ref } from "vue";
+// import contacts from "./contacts.json";
+// import { ref } from "vue";
 
-const firstFiveContacts = ref(contacts.slice(0, 5));
-const hasWonOscar = (contact) => {
-  return contact.wonOscar ? true : false;
-};
-const hasWonEmmy = (contact) => {
-  return contact.wonEmmy ? true : false;
-};
+// const firstFiveContacts = ref(contacts.slice(0, 5));
+// const hasWonOscar = (contact) => {
+//   return contact.wonOscar ? true : false;
+// };
+// const hasWonEmmy = (contact) => {
+//   return contact.wonEmmy ? true : false;
+// };
 
-const addRandomContact = () => {
-  const randomIndex = Math.floor(Math.random() * contacts.length);
-  const randomContact = contacts[randomIndex];
-  firstFiveContacts.value = [...firstFiveContacts.value, randomContact];
-};
+// const addRandomContact = () => {
+//   const randomIndex = Math.floor(Math.random() * contacts.length);
+//   const randomContact = contacts[randomIndex];
+//   firstFiveContacts.value = [...firstFiveContacts.value, randomContact];
+// };
 
-const sortByPopularity = ref(true);
-const sortByName = ref(true);
+// const sortByPopularity = ref(true);
+// const sortByName = ref(true);
 
-const toggleSortByPopularity = () => {
-  firstFiveContacts.value.sort((a, b) => {
-    return sortByPopularity.value
-      ? a.popularity - b.popularity
-      : b.popularity - a.popularity;
-  });
-  sortByPopularity.value = !sortByPopularity.value;
-};
+// const toggleSortByPopularity = () => {
+//   firstFiveContacts.value.sort((a, b) => {
+//     return sortByPopularity.value
+//       ? a.popularity - b.popularity
+//       : b.popularity - a.popularity;
+//   });
+//   sortByPopularity.value = !sortByPopularity.value;
+// };
 
-const toggleSortByName = () => {
-  firstFiveContacts.value.sort((a, b) => {
-    return sortByName.value
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
-  });
-  sortByName.value = !sortByName.value;
-};
+// const toggleSortByName = () => {
+//   firstFiveContacts.value.sort((a, b) => {
+//     return sortByName.value
+//       ? a.name.localeCompare(b.name)
+//       : b.name.localeCompare(a.name);
+//   });
+//   sortByName.value = !sortByName.value;
+// };
 
-const deleteContact = (id) => {
-  firstFiveContacts.value = firstFiveContacts.value.filter(
-    (contact) => contact.id !== id
-  );
-};
+// const deleteContact = (id) => {
+//   firstFiveContacts.value = firstFiveContacts.value.filter(
+//     (contact) => contact.id !== id
+//   );
+// };
+import { useContactsStore } from "./stores/contacts.js"
+import {storeToRefs} from "pinia"
+
+const contactsStore = useContactsStore();
+
+const {
+  firstFiveContacts
+} = storeToRefs(contactsStore);
 </script>
 
 <template>
   <div class="main-container">
     <h1>IronContacts</h1>
     <div class="button-container">
-      <button @click="addRandomContact">Add Random Contact</button>
-      <button @click="toggleSortByPopularity">Sort by popularity</button>
-      <button @click="toggleSortByName">Sort by name</button>
+      <button @click="contactsStore.addRandomContact">Add Random Contact</button>
+      <button @click="contactsStore.toggleSortByPopularity">Sort by popularity</button>
+      <button @click="contactsStore.toggleSortByName">Sort by name</button>
     </div>
     <div class="table-container">
       <table>
@@ -75,10 +83,10 @@ const deleteContact = (id) => {
             </td>
             <td>{{ contact.name }}</td>
             <td>{{ contact.popularity }}</td>
-            <td>{{ hasWonOscar(contact) ? "🏆" : "" }}</td>
-            <td>{{ hasWonEmmy(contact) ? "🏆" : "" }}</td>
+            <td>{{ contact.wonOscar? "🏆" : "" }}</td>
+            <td>{{ contact.wonEmmy? "🏆" : "" }}</td>
             <td>
-              <button @click="() => deleteContact(contact.id)">Delete</button>
+              <button @click="() => contactsStore.deleteContact(contact.id)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -116,5 +124,4 @@ td {
   padding: 8px;
   text-align: center;
 }
-
 </style>
